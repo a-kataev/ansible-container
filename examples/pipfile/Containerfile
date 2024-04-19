@@ -1,0 +1,21 @@
+FROM ansible-container
+
+COPY Pipfile /ansible
+COPY Pipfile.lock /ansible
+
+RUN set -x && \
+  pip --no-cache-dir install --root-user-action=ignore pipenv && \
+  pipenv requirements --exclude-markers > requirements.txt && \
+  for pkg in $(pip list --format freeze | cut -d '=' -f 1 | sort); do \
+    sed -i '/^'${pkg}'/d' requirements.txt; done && \
+  cat requirements.txt && \
+  PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore \
+    pip --no-cache-dir install -r requirements.txt && \
+  rm -rf requirements.txt
+
+USER ansible
+
+ENV SKIP_SSH_AGENT=skip \
+  SKIP_ENTRYPOINT_SCRIPTS=skip
+
+CMD ["pip", "list", "--format", "freeze"]

@@ -1,0 +1,11 @@
+FROM ansible-container
+
+COPY ansible.cfg /ansible
+COPY hosts /ansible
+COPY playbook.yml /ansible
+
+USER ansible
+
+ENV SKIP_SSH_AGENT=skip
+
+CMD ["ansible-playbook", "playbook.yml"]
