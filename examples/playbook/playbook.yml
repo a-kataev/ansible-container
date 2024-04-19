@@ -1,0 +1,7 @@
+---
+- name: Python version
+  hosts: localhost
+  tasks:
+    - name: Print python version
+      ansible.builtin.debug:
+        var: ansible_python_version
